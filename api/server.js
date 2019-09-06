@@ -38,7 +38,6 @@ const sessionOptions = {
     clearInterval: 1000 * 60 * 60
   })
 };
-
 const server = express();
 
 server.use(helmet());
