@@ -17,6 +17,8 @@ exports.up = function(knex, Promise) {
       .inTable('properties')
       .onUpdate('CASCADE')
       .onDelete('CASCADE');
+    tbl.date('start_date').notNullable();
+    tbl.date('end_date').notNullable();
   });
 };
 
