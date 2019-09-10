@@ -27,7 +27,7 @@ router.post('/login', (req, res) => {
       if (user && bcrypt.compareSync(password, user.password)) {
         req.session.user = user;
         res.status(200).json({
-          message: `Welcome ${user.username}!`,
+          message: `Welcome ${user.username}!`
         });
       } else {
         res.status(401).json({ message: 'Invalid Credentials' });
@@ -38,20 +38,32 @@ router.post('/login', (req, res) => {
     });
 });
 
-router.delete('/logout', (req,res)=> {
-  if (req.session){
-    req.session.destroy((err) => {
-
-     if (err) {res.send('unable to logout...');
-    }else {
-      res.send('thank you for using 5th wheel air b&b');
-    }
-  });
-
- } else {
-  res.end();
-}
+router.delete('/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.send('unable to logout...');
+      } else {
+        res.send('thank you for using 5th wheel air b&b');
+      }
+    });
+  } else {
+    res.end();
+  }
 });
- 
+
+router.put('/edituser/:id', async (req, res) => {
+  try {
+    const user = await Users.update(req.params.id, req.body);
+
+    if (user) {
+      res.status(200).json(user);
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (err) {
+    res.status(500).json({ message: 'Error updating user information' });
+  }
+});
 
 module.exports = router;
