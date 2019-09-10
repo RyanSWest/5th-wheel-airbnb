@@ -119,4 +119,18 @@ function validateUserType(req, res, next) {
   }
 }
 
+router.delete('/deleteuser/:id', (req, res) => {
+  try {
+    const deleted = Users.remove(req.params.id);
+    if (deleted) {
+      res.json(200).json({ message: 'user deleted' });
+    } else {
+      res.json(400).json({ message: 'User not found' });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: 'error deleting user' });
+  }
+});
+
 module.exports = router;
