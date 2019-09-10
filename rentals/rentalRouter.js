@@ -125,4 +125,35 @@ async function validateRenterType(req, res, next) {
   }
 }
 
+//update reservation
+router.put('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const rental = await Rental.update(id, req.body);
+    res.status(201).json(rental);
+  } catch (err) {
+    console.log(err);
+    res
+      .status(500)
+      .json({ message: 'There was an error updating reservation' });
+  }
+});
+
+//delete reservation
+
+router.delete('/:id', async (req, res) => {
+  try {
+    const deleted = await Rental.remove(req.params.id);
+    console.log(deleted);
+    if (deleted == 1) {
+      const rentals = await Rental.find();
+      res.status(200).json(rentals);
+    } else {
+      res.status(400).json({ message: 'rental not found' });
+    }
+  } catch (err) {
+    res.json(500).json({ message: 'error deleting reservation' });
+  }
+});
+
 module.exports = router;
