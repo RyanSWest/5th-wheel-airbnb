@@ -31,7 +31,7 @@ router.get(':/id', async (req, res) => {
 });
 
 // Add rental reservation
-router.post('/', async (req, res) => {
+router.post('/reservation', async (req, res) => {
   try {
     const rental = await Rental.insert(req.body);
     res.status(201).json(rental);
@@ -42,7 +42,7 @@ router.post('/', async (req, res) => {
 });
 
 //update reservation
-router.put('/:id', async (req, res) => {
+router.put('/reservation/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const rental = await Rental.update(id, req.body);
@@ -68,7 +68,7 @@ router.delete('/:id', async (req, res) => {
       res.status(400).json({ message: 'rental not found' });
     }
   } catch (err) {
-    res.json(500).json({ message: 'error deleting reservation' });
+    res.status(500).json({ message: 'error deleting reservation' });
   }
 });
 
