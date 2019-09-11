@@ -5,17 +5,23 @@ const Users = require('../users/users-model.js');
 
 // for endpoints beginning with /api/auth
 router.post('/register', (req, res) => {
-  let user = req.body;
-  const hash = bcrypt.hashSync(user.password, 10); // 2 ^ n
-  user.password = hash;
+  if (req.body.user_type == 'land-owner' || 'rv-owner') {
+    let user = req.body;
+    const hash = bcrypt.hashSync(user.password, 10); // 2 ^ n
+    user.password = hash;
 
-  Users.add(user)
-    .then(saved => {
-      res.status(201).json(saved);
-    })
-    .catch(error => {
-      res.status(500).json(error);
-    });
+    Users.add(user)
+      .then(saved => {
+        res.status(201).json(saved);
+      })
+      .catch(error => {
+        res.status(500).json(error);
+      });
+  } else {
+    res
+      .status(400)
+      .json({ message: 'User Type must be land-owner or rv-owner' });
+  }
 });
 
 router.post('/login', (req, res) => {
@@ -52,27 +58,22 @@ router.delete('/logout', (req, res) => {
   }
 });
 
-router.put('/edituser/:id', async (req, res) => {
+router.put('/edituser/:id', validateUserId, async (req, res) => {
   try {
-    const user = await Users.update(req.params.id, req.body);
+    const updated = await Users.update(req.params.id, req.body);
 
-    if (user) {
-      res.status(200).json(user);
-    } else {
-      res.status(404).json({ message: 'User not found' });
-    }
+    res.status(200).json(updated);
   } catch (err) {
     res.status(500).json({ message: 'Error updating user information' });
   }
 });
 
-router.delete('/deleteuser/:id', (req, res) => {
+router.delete('/deleteuser/:id', validateUserId, (req, res) => {
+  const removed = req.body;
   try {
     const deleted = Users.remove(req.params.id);
-    if (deleted) {
-      res.status(200).json({ message: 'user deleted' });
-    } else {
-      res.status(400).json({ message: 'User not found' });
+    if (deleted === 1) {
+      res.status(200).json({ message: 'User Deleted', removed });
     }
   } catch (err) {
     console.log(err);
@@ -92,5 +93,19 @@ router.get('/users', async (req, res) => {
     res.status(500).json({ message: 'error retrieving users' });
   }
 });
+
+async function validateUserId(req, res, next) {
+  try {
+    const user = await Users.findById(req.params.id);
+    if (user) {
+      req.user = user;
+      next();
+    } else {
+      res.status(400).json({ message: 'User Id not found' });
+    }
+  } catch (err) {
+    res.status(500).json({ message: 'Error validating UserID' });
+  }
+}
 
 module.exports = router;
