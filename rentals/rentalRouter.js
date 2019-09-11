@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
 
 // get rentals by id
 
-router.get(':/id', async (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
     const rental = await Rental.findById(req.params.id);
     if (rental) {
