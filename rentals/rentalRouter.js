@@ -1,10 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
-const validateRentalId = require('../middleware/validateRentalId.js');
-const validateRenterType = require('../middleware/validateRenterType.js');
-const validatePropertyId = require('../middleware/validatePropertyId.js');
 const Rental = require('./rental-model.js');
+const Properties = require('../properties/prop-model.js');
+const User = require('../users/users-model.js');
 
 // Reached via /api/rentals
 router.get('/', async (req, res) => {
@@ -76,23 +75,54 @@ router.delete('/:id', validateRentalId, async (req, res) => {
   }
 });
 
-//Validate Rental Id exists
-// async function validateRentalId(req, res, next) {
-//   try {
-//     const rental = await Rental.findById(req.params.id);
-//     if (rental) {
-//       req.rental = rental;
-//       next();
-//     } else {
-//       res.status(404).json({ message: 'Rental Id not found' });
-//     }
-//   } catch (err) {
-//     res.status(500).json({ message: 'Error validating Rental' });
-//   }
-// }
+async function validatePropertyId(req, res, next) {
+  try {
+    const property = await Properties.findById(req.body.property_id);
+    console.log(property);
+    if (property) {
+      req.property = property;
+      next();
+    } else {
+      res.status(400).json({ message: 'Property Id not found' });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: 'Error Validating Property ID' });
+  }
+}
 
-//validate renter_id belongs to a renter
+async function validateRentalId(req, res, next) {
+  try {
+    const rental = await Rental.findById(req.params.id);
+    if (rental) {
+      req.rental = rental;
+      next();
+    } else {
+      res.status(404).json({ message: 'Rental Id not found' });
+    }
+  } catch (err) {
+    res.status(500).json({ message: 'Error validating Rental' });
+  }
+}
 
-//validate land-
+async function validateRenterType(req, res, next) {
+  try {
+    const user = await User.findById(req.body.renter_id);
+    console.log(user);
+    if (user) {
+      if (user.user_type === 'rv-owner') {
+        next();
+      } else {
+        res
+          .status(400)
+          .json({ message: 'Renter ID must belong to an RV owner' });
+      }
+    } else {
+      res.status(400).json({ message: 'Renter Id not found' });
+    }
+  } catch (err) {
+    res.status(500).json({ message: 'Error validating renter type' });
+  }
+}
 
 module.exports = router;
