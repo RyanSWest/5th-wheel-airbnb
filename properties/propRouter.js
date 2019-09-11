@@ -1,10 +1,7 @@
 const express = require('express');
 const router = express.Router();
-// const db = require('../database/dbConfig');
-// const server = express();
-// server.use(express.json());
-
 const Properties = require('./prop-model.js');
+const User = require('../users/users-model.js');
 
 // GET ALL
 router.get('/', async (req, res) => {
@@ -18,23 +15,13 @@ router.get('/', async (req, res) => {
 
 // GET by ID
 
-router.get('/:id', async (req, res) => {
-  try {
-    const property = await Properties.findById(req.params.id);
-    if (property) {
-      res.status(200).json(property);
-    } else {
-      res.status(404).json({ message: 'Property not found' });
-    }
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: 'Failed to retrieve property' });
-  }
+router.get('/:id', validatePropertyId, async (req, res) => {
+  res.status(200).json(req.property);
 });
 
 //ADD Property'
 
-router.post('/', async (req, res) => {
+router.post('/', validateOwner, async (req, res) => {
   try {
     const property = await Properties.insert(req.body);
     res.status(201).json(property);
@@ -46,7 +33,7 @@ router.post('/', async (req, res) => {
 
 //Update Property
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', validatePropertyId, validateOwner, async (req, res) => {
   try {
     const updated = await Properties.update(req.params.id, req.body);
     res.status(201).json(updated);
@@ -70,4 +57,37 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+async function validatePropertyId(req, res, next) {
+  try {
+    const property = await Properties.findById(req.params.id);
+    console.log(property);
+    if (property) {
+      req.property = property;
+      next();
+    } else {
+      res.status(400).json({ message: 'Property Id not found' });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: 'Error Validating Property ID' });
+  }
+}
+
+async function validateOwner(req, res, next) {
+  try {
+    const user = await User.findById(req.body.owner_id);
+    console.log(user);
+    if (user) {
+      if (user.user_type === 'land-owner') {
+        next();
+      } else {
+        res.status(400).json({ message: 'Owner ID must belong to Land owner' });
+      }
+    } else {
+      res.status(400).json({ message: 'Owner Id not found' });
+    }
+  } catch (err) {
+    res.status(500).json({ message: 'Error validating Owner type' });
+  }
+}
 module.exports = router;
