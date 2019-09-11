@@ -119,31 +119,4 @@ function validateUserType(req, res, next) {
   }
 }
 
-router.delete('/deleteuser/:id', (req, res) => {
-  try {
-    const deleted = Users.remove(req.params.id);
-    if (deleted) {
-      res.status(200).json({ message: 'user deleted' });
-    } else {
-      res.status(400).json({ message: 'User not found' });
-    }
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: 'error deleting user' });
-  }
-});
-
-//For Testing
-
-router.get('/users', async (req, res) => {
-  try {
-    const users = await Users.find();
-    console.log(users);
-    res.status(200).json(users);
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: 'error retrieving users' });
-  }
-});
-
 module.exports = router;
