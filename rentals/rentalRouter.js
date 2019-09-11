@@ -126,7 +126,7 @@ async function validateRenterType(req, res, next) {
 }
 
 //update reservation
-router.put('/:id', async (req, res) => {
+router.put('/reservation/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const rental = await Rental.update(id, req.body);
@@ -152,7 +152,7 @@ router.delete('/:id', async (req, res) => {
       res.status(400).json({ message: 'rental not found' });
     }
   } catch (err) {
-    res.json(500).json({ message: 'error deleting reservation' });
+    res.status(500).json({ message: 'error deleting reservation' });
   }
 });
 
