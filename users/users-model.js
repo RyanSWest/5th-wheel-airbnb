@@ -10,7 +10,7 @@ module.exports = {
 };
 
 function find() {
-  return db('users').select('id', 'username', 'user_type','messages');
+  return db('users').select('id', 'username', 'user_type', 'messages');
 }
 
 function findBy(filter) {
@@ -31,25 +31,26 @@ function findById(id) {
 
 // this function was changed to work with the Messenger.
 
-
-  function update(id, changes) {
-  console.log( 'CHANGES',changes)
+function update(id, changes) {
+  console.log('CHANGES', changes);
   db('users')
-    .where({ "id":id })
-    .update( changes)
-    .then(count  =>   {console.log(count)})
-    .catch(err =>
-      {console.log(err)})
-     
-   const user = findById(id);
-   return user
+    .where({ id: id })
+    .update(changes)
+    .then(count => {
+      console.log(count);
+    })
+    .catch(err => {
+      console.log(err);
+    });
+
+  const user = findById(id);
+  return user;
 }
 //   return db('users');
 // }
 
 function remove(id) {
-  db('users')
+  return db('users')
     .where({ id })
     .del();
-  return find();
 }

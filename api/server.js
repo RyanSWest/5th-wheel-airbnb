@@ -3,14 +3,15 @@ const knexSessionStore = require('connect-session-knex')(session);
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
+const restricted = require('../auth/restricted-middleware.js');
 
 const authRouter = require('../auth/auth-router.js');
 const usersRouter = require('../users/users-router.js');
 const propRouter = require('../properties/propRouter');
 const rentalRouter = require('../rentals/rentalRouter');
- const sessionOptions = {
+const sessionOptions = {
   name: 'mycookie',
-  secret: 'chocolate',
+  secret: process.env.SESSION_SECRET || 'chocolate',
   cookie: {
     maxAge: 1000 * 60 * 60,
     secure: false,
@@ -29,8 +30,6 @@ const rentalRouter = require('../rentals/rentalRouter');
     clearInterval: 1000 * 60 * 60
   })
 };
-
-
 
 const multer = require('multer');
 const storage = multer.diskStorage({
@@ -53,9 +52,9 @@ server.use(session(sessionOptions));
 
 server.use('/api/auth', authRouter);
 server.use('/api/users', usersRouter);
-server.use('/api/properties', propRouter);
-server.use('/api/rentals', rentalRouter);
-  
+server.use('/api/properties', restricted, propRouter);
+server.use('/api/rentals', restricted, rentalRouter);
+
 server.get('/', (req, res) => {
   res.json({ api: 'Welcome to 5th Wheel Air B & B !' });
 });
