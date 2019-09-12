@@ -6,8 +6,9 @@ const helmet = require('helmet');
 const cors = require('cors');
 
 const authRouter = require('../auth/auth-router.js');
-// const usersRouter = require('../users/users-router.js');
-const propRouter = require('../properties/propRouter')
+const usersRouter = require('../users/users-router.js');
+const propRouter = require('../properties/propRouter');
+const Upload = require('../users/upload');
 const sessionOptions ={
   name: 'mycookie',
   secret: 'chocolate',
@@ -38,8 +39,9 @@ server.use(cors());
 server.use(session(sessionOptions))
 
 server.use('/api/auth', authRouter);
-// server.use('/api/users', usersRouter);
+server.use('/api/users', usersRouter);
 server.use('/api/properties', propRouter);
+server.use('/api/upload', Upload)
 
 server.get('/', (req, res) => {
   res.json({ api: 'Welcome to 5th Wheel Air B & B !' });

@@ -12,7 +12,9 @@ router.get('/', async (req,res) => {
         const props = await db('properties')
         res.json(props);
     }catch(err){
-        res.status(500).json({message: 'Failed to retrieve properties'})
+        res.status(500).json({
+            error: err,
+            message: `Failed to retrieve properties${err}`})
     }
 })
 
