@@ -5,10 +5,12 @@ module.exports = {
   find,
   findBy,
   findById,
+  update,
+  remove
 };
 
 function find() {
-  return db('users').select('id', 'username');
+  return db('users').select('id', 'username', 'user_type');
 }
 
 function findBy(filter) {
@@ -25,4 +27,18 @@ function findById(id) {
   return db('users')
     .where({ id })
     .first();
+}
+
+function update(id, changes) {
+  db('users')
+    .where({ id })
+    .update(changes);
+  return find();
+}
+
+function remove(id) {
+  db('users')
+    .where({ id })
+    .del();
+  return find();
 }

@@ -10,38 +10,38 @@ module.exports = {
 };
 
 function find() {
-  return db('rentals');
+  return db('properties');
 }
 
 function findBy(filter) {
-  return db('rentals').where(filter);
+  return db('properties').where(filter);
 }
 
 function findById(id) {
-  return db('rentals')
+  return db('properties')
     .where({ id })
     .first();
 }
 
-function insert(rental) {
-  return db('rentals')
-    .insert(rental)
+function insert(property) {
+  return db('properties')
+    .insert(property)
     .then(() => {
-      return db('rentals');
+      return find();
     });
 }
 
 function update(id, changes) {
-  return db('rentals')
+  return db('properties')
     .where({ id })
     .update(changes)
     .then(() => {
-      return db('rentals');
+      return db('properties');
     });
 }
 
 function remove(id) {
-  return db('rentals')
+  return db('properties')
     .where({ id })
     .del();
 }
