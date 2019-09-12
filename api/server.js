@@ -4,6 +4,7 @@ const knexSessionStore = require('connect-session-knex')(session);
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
+const restricted = require('../auth/restricted-middleware.js');
 
 // const aws = require('aws-sdk');
 
@@ -16,12 +17,16 @@ const usersRouter = require('../users/users-router.js');
 const propRouter = require('../properties/propRouter');
 const rentalRouter = require('../rentals/rentalRouter');
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 //cookies
 const sessionOptions = {
 =======
  const sessionOptions = {
 >>>>>>> added message function
+=======
+const sessionOptions = {
+>>>>>>> added restricted routes to server
   name: 'mycookie',
   secret: process.env.SESSION_SECRET || 'chocolate',
   cookie: {
@@ -64,6 +69,7 @@ server.use(session(sessionOptions));
 server.use('/api/auth', authRouter);
 server.use('/api/users', usersRouter);
 <<<<<<< HEAD
+<<<<<<< HEAD
 server.use('/api/properties', restricted, propRouter);
 server.use('/api/rentals', restricted, rentalRouter);
 server.use('/api/upload', Upload);
@@ -73,6 +79,11 @@ server.use('/api/properties', propRouter);
 server.use('/api/rentals', rentalRouter);
   
 >>>>>>> added message function
+=======
+server.use('/api/properties', restricted, propRouter);
+server.use('/api/rentals', restricted, rentalRouter);
+
+>>>>>>> added restricted routes to server
 server.get('/', (req, res) => {
   res.json({ api: 'Welcome to 5th Wheel Air B & B !' });
 });
