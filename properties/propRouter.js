@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Properties = require('./prop-model.js');
 const User = require('../users/users-model.js');
-
+//accessed via /api/properties
 // GET ALL
 router.get('/', async (req, res) => {
   try {
