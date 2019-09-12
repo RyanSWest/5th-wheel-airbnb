@@ -1,13 +1,14 @@
 const router = require('express').Router();
 const bcrypt = require('bcryptjs');
+const restricted = require('./restricted-middleware.js');
 
 const Users = require('../users/users-model.js');
 
 // for endpoints beginning with /api/auth
-router.post('/register', (req, res) => {
-  if (req.body.user_type == 'land-owner' || 'rv-owner') {
+router.post('/register', validateUserType, async (req, res) => {
+  try {
     let user = req.body;
-    const hash = bcrypt.hashSync(user.password, 10); // 2 ^ n
+    const hash = await bcrypt.hashSync(user.password, 10); // 2 ^ n
     user.password = hash;
 
     Users.add(user)
@@ -17,10 +18,8 @@ router.post('/register', (req, res) => {
       .catch(error => {
         res.status(500).json(error);
       });
-  } else {
-    res
-      .status(400)
-      .json({ message: 'User Type must be land-owner or rv-owner' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error Registering User' });
   }
 });
 
@@ -58,22 +57,23 @@ router.delete('/logout', (req, res) => {
   }
 });
 
-router.put('/edituser/:id', validateUserId, async (req, res) => {
+router.put('/edituser/:id', restricted, validateUserId, async (req, res) => {
   try {
     const updated = await Users.update(req.params.id, req.body);
-
-    res.status(200).json(updated);
+    console.log(updated);
+    res.status(200).json({ message: 'Password updated' });
   } catch (err) {
     res.status(500).json({ message: 'Error updating user information' });
   }
 });
 
-router.delete('/deleteuser/:id', validateUserId, (req, res) => {
-  const removed = req.body;
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+  console.log(id);
   try {
-    const deleted = Users.remove(req.params.id);
+    const deleted = await Users.remove(req.params.id);
     if (deleted === 1) {
-      res.status(200).json({ message: 'User Deleted', removed });
+      res.status(200).json({ message: 'User Deleted' });
     }
   } catch (err) {
     console.log(err);
@@ -83,7 +83,7 @@ router.delete('/deleteuser/:id', validateUserId, (req, res) => {
 
 //For Testing
 
-router.get('/users', async (req, res) => {
+router.get('/users', restricted, async (req, res) => {
   try {
     const users = await Users.find();
     console.log(users);
@@ -94,6 +94,7 @@ router.get('/users', async (req, res) => {
   }
 });
 
+//MIDDLEWARE
 async function validateUserId(req, res, next) {
   try {
     const user = await Users.findById(req.params.id);
@@ -105,6 +106,16 @@ async function validateUserId(req, res, next) {
     }
   } catch (err) {
     res.status(500).json({ message: 'Error validating UserID' });
+  }
+}
+
+function validateUserType(req, res, next) {
+  if (req.body.user_type === 'land-owner') {
+    console.log('land-owner middleware passed'), next();
+  } else if (req.body.user_type === 'rv-owner') {
+    console.log('rv-owner middleware passed'), next();
+  } else {
+    res.status(400).json({ message: 'User type must be an rv or land owner' });
   }
 }
 
