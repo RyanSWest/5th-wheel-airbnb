@@ -84,7 +84,7 @@ const upload = multer({
   //   checkFileType(file, cb);
   // }
 });
-server.post('/upload', upload.single('profile'), (req, res, err) => {
+server.post('/upload', upload.single('photo'), (req, res, err) => {
   try {
     res.send(req.file);
   } catch (err) {
