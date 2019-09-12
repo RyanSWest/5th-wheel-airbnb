@@ -3,8 +3,19 @@ const knexSessionStore = require('connect-session-knex')(session);
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
-const restricted = require('../auth/restricted-middleware.js');
 
+const multer = require('multer');
+const storage = multer.diskStorage({
+  destination: function(req, file, cb) {
+    cb(null, './upload');
+  },
+  filename: function(req, file, cb) {
+    cb(null, file.originalname);
+  }
+});
+const upload = multer({ storage: storage });
+
+const restricted = require('../auth/restricted-middleware.js');
 const authRouter = require('../auth/auth-router.js');
 const usersRouter = require('../users/users-router.js');
 const propRouter = require('../properties/propRouter');
@@ -59,6 +70,14 @@ server.get('/', (req, res) => {
   res.json({ api: 'Welcome to 5th Wheel Air B & B !' });
 });
 server.post('/single', upload.single('test'), (req, res) => {
+  try {
+    res.send(req.file);
+  } catch (err) {
+    res.send(400).statusMessage({ message: 'Error uploading photo' });
+  }
+});
+
+server.post('/single', upload.single('single'), (req, res) => {
   try {
     res.send(req.file);
   } catch (err) {
