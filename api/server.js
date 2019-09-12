@@ -12,7 +12,7 @@ const cors = require('cors');
 
 const restricted = require('../auth/restricted-middleware.js');
 const authRouter = require('../auth/auth-router.js');
-// const usersRouter = require('../users/users-router.js');
+const usersRouter = require('../users/users-router.js');
 const propRouter = require('../properties/propRouter');
 const rentalRouter = require('../rentals/rentalRouter');
 
@@ -38,6 +38,18 @@ const sessionOptions = {
     clearInterval: 1000 * 60 * 60
   })
 };
+
+const multer = require('multer');
+const storage = multer.diskStorage({
+  destination: function(req, file, cb) {
+    cb(null, './uploads');
+  },
+  filename: function(req, file, cb) {
+    cb(null, file.originalname);
+  }
+});
+const upload = multer({ storage: storage });
+
 const server = express();
 
 server.use(helmet());
@@ -46,11 +58,20 @@ server.use(cors());
 server.use(session(sessionOptions));
 
 server.use('/api/auth', authRouter);
+server.use('/api/users', usersRouter);
 server.use('/api/properties', restricted, propRouter);
 server.use('/api/rentals', restricted, rentalRouter);
+server.use('/api/upload', Upload);
 
 server.get('/', (req, res) => {
   res.json({ api: 'Welcome to 5th Wheel Air B & B !' });
+});
+server.post('/single', upload.single('test'), (req, res) => {
+  try {
+    res.send(req.file);
+  } catch (err) {
+    res.send(400).statusMessage({ message: 'Error uploading photo' });
+  }
 });
 
 /** AWS catalog */
