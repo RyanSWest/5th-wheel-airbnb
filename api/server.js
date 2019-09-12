@@ -1,3 +1,4 @@
+require('dotenv').config();
 const session = require('express-session');
 const knexSessionStore = require('connect-session-knex')(session);
 const express = require('express');
@@ -5,33 +6,17 @@ const helmet = require('helmet');
 const cors = require('cors');
 
 const aws = require('aws-sdk');
-aws.config.update({
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  region: 'us-west-1'
-});
 
-const bodyParser = require('body-parser');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
-
-const upload = multer({
-  storage: multerS3({
-    s3: s3,
-    acl: 'public-read',
-    bucket: 'fifth-wheel',
-    key: function(req, file, cb) {
-      console.log(file);
-      cb(null, file.originalname);
-    }
-  })
-});
 
 const restricted = require('../auth/restricted-middleware.js');
 const authRouter = require('../auth/auth-router.js');
 const usersRouter = require('../users/users-router.js');
 const propRouter = require('../properties/propRouter');
 const rentalRouter = require('../rentals/rentalRouter');
+
+//cookies
 const sessionOptions = {
   name: 'mycookie',
   secret: process.env.SESSION_SECRET || 'chocolate',
@@ -54,22 +39,9 @@ const sessionOptions = {
   })
 };
 
-const multer = require('multer');
-const storage = multer.diskStorage({
-  destination: function(req, file, cb) {
-    cb(null, './uploads');
-  },
-  filename: function(req, file, cb) {
-    cb(null, file.originalname);
-  }
-});
-const upload = multer({ storage: storage });
-
 const server = express();
-// knexSessionStore(session);
 
 server.use(helmet());
-server.use(bodyParser.json());
 server.use(express.json());
 server.use(cors());
 server.use(session(sessionOptions));
@@ -90,12 +62,42 @@ server.post('/single', upload.single('test'), (req, res) => {
   }
 });
 
-server.get('/multer', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
+/** AWS catalog */
+
+aws.config.update({
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  region: 'us-west-1'
 });
 
-server.post('/upload', upload.array('upl', 1), (req, res, next) => {
-  res.send('Uploaded!');
+const s3 = new aws.S3();
+const awsStorage = multerS3({
+  s3: s3,
+  bucket: process.env.AWS_BUCKET_NAME,
+  key: function(req, file, cb) {
+    console.log(file);
+    cb(null, file.originalname);
+  }
+});
+
+const upload = multer({
+  /**if you are using local storage than use
+   * storage: fileStorage,
+   * if you are using aws storage than use
+   * storage: awsStorage,
+   */
+  storage: awsStorage,
+  limits: { fileSize: 5000000 }
+  // fileFilter: function(req, file, cb) {
+  //   checkFileType(file, cb);
+  // }
+});
+server.post('/upload', upload.single('profile'), (req, res, err) => {
+  try {
+    res.send(req.file);
+  } catch (err) {
+    res.send(400);
+  }
 });
 
 module.exports = server;
