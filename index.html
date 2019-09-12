@@ -1,28 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
+<html>
+  <head lang="en">
     <meta charset="UTF-8" />
-    <title>MY APP</title>
+    <title></title>
   </head>
   <body>
-    <!--  SINGLE FILE -->
-    <form action="/uploadfile" enctype="multipart/form-data" method="POST">
-      <input type="file" name="myFile" />
-      <input type="submit" value="Upload a file" />
-    </form>
+    Hey! Lets try uploading to s3 directly :)
 
-    <!-- MULTIPLE FILES -->
+    <form method="post" enctype="multipart/form-data" action="/upload">
+      <p>
+        <input type="text" name="title" placeholder="optional title" />
+      </p>
 
-    <form action="/uploadmultiple" enctype="multipart/form-data" method="POST">
-      Select images: <input type="file" name="myFiles" multiple />
-      <input type="submit" value="Upload your files" />
-    </form>
+      <p>
+        <input type="file" name="upl" />
+      </p>
 
-    <!--   PHOTO-->
-
-    <form action="/upload/photo" enctype="multipart/form-data" method="POST">
-      <input type="file" name="myImage" accept="image/*" />
-      <input type="submit" value="Upload Photo" />
+      <p>
+        <input type="submit" />
+      </p>
     </form>
   </body>
 </html>
