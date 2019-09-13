@@ -2,6 +2,51 @@ const express = require('express');
 const router = express.Router();
 const Properties = require('./prop-model.js');
 const User = require('../users/users-model.js');
+
+const aws = require('aws-sdk');
+
+const multer = require('multer');
+const multerS3 = require('multer-s3');
+
+aws.config.update({
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  region: 'us-west-1'
+});
+
+const s3 = new aws.S3();
+const awsStorage = multerS3({
+  s3: s3,
+  bucket: process.env.AWS_BUCKET_NAME,
+  key: function(req, file, cb) {
+    console.log(file);
+    cb(null, file.originalname);
+  }
+});
+
+const upload = multer({
+  /**if you are using local storage than use
+   * storage: fileStorage,
+   * if you are using aws storage than use
+   * storage: awsStorage,
+   */
+  storage: awsStorage,
+  limits: { fileSize: 5000000 }
+  // fileFilter: function(req, file, cb) {
+  //   checkFileType(file, cb);
+  // }
+});
+router.post('/upload/:id', upload.single('profile'), (req, res, err) => {
+  try {
+    const imageUrl = req.file.location;
+    const property_id = req.params.id;
+    const package = { property_id, imageUrl };
+    res.send(package);
+  } catch (err) {
+    res.send(400);
+  }
+});
+
 //accessed via /api/properties
 // GET ALL
 router.get('/', async (req, res) => {
@@ -55,6 +100,10 @@ router.post('/', validateOwner, async (req, res) => {
     res.status(500).json({ message: 'There was an error adding property' });
   }
 });
+
+//ADD Property Photo
+
+router.post();
 
 //Update Property
 
