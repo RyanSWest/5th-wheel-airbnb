@@ -1,9 +1,15 @@
 const router = require('express').Router();
 
 const Users = require('./users-model.js');
+<<<<<<< HEAD
 // const restricted = require('../auth/restricted-middleware.js');
 
 router.get('/', (req, res) => {
+=======
+const restricted = require('../auth/restricted-middleware.js');
+const messageWare = require('../auth/message-middleware')
+router.get('/',  (req, res) => {
+>>>>>>> added message function
   Users.find()
     .then(users => {
       res.json(users);
@@ -19,16 +25,21 @@ router.get('/:id', async (req, res)=> {
 
 /// Check messages  
 
-router.get('/:id/messages', async (req, res)=> {
-  res.status(200).json(req.body.messages)
+router.get('/:id/messages', messageWare,  async (req, res)=> {
+  console.log({message: req.body.messages, from: req.session.user.username})
+  res.status(200).json({message: req.body.messages, from: req.session.user.username})
+  res.json(req.session.user.username)
+
 })
  
 //Send message to user with this ID
-router.put('/:id', async (req, res)=> {
+router.put('/:id',async (req, res)=> {
+  console.log(req.body.username)
   const {id} =req.params;
   try{
     const user = await Users.update(id, req.body.messages);
-    res.status(201).json(user);
+    res.status(201).json({message: `message sent to ${req.body.username}`});
+    res.json(req.session.user.username)
   }catch(err){
     console.log(err)
     res.status(500)
@@ -36,23 +47,6 @@ router.put('/:id', async (req, res)=> {
   }
 })
 
-router.delete('/:id', async (req, res) => {
-  try {
-      const deleted = Users.remove(req.params.id)
-      console.log(deleted)
-      if (deleted == 1) {
-        const users= await Users.find();
-        res.status(200).json(users);
-           
-      } else {
-          res.status(404).json({ errorMessage: 'User not found...' })
-      }
-  } catch (error) {
-      console.log(error)
-      res.status(500).json({
-          errorMessage: 'Error removing the user.'
-      })
-  }
-})
+ 
 
 module.exports = router;

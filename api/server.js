@@ -15,9 +15,13 @@ const authRouter = require('../auth/auth-router.js');
 const usersRouter = require('../users/users-router.js');
 const propRouter = require('../properties/propRouter');
 const rentalRouter = require('../rentals/rentalRouter');
+<<<<<<< HEAD
 
 //cookies
 const sessionOptions = {
+=======
+ const sessionOptions = {
+>>>>>>> added message function
   name: 'mycookie',
   secret: process.env.SESSION_SECRET || 'chocolate',
   cookie: {
@@ -59,10 +63,16 @@ server.use(session(sessionOptions));
 
 server.use('/api/auth', authRouter);
 server.use('/api/users', usersRouter);
+<<<<<<< HEAD
 server.use('/api/properties', restricted, propRouter);
 server.use('/api/rentals', restricted, rentalRouter);
 server.use('/api/upload', Upload);
 
+=======
+server.use('/api/properties', propRouter);
+server.use('/api/rentals', rentalRouter);
+  
+>>>>>>> added message function
 server.get('/', (req, res) => {
   res.json({ api: 'Welcome to 5th Wheel Air B & B !' });
 });
