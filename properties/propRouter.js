@@ -97,6 +97,11 @@ router.post('/', validateOwner, async (req, res) => {
 
 //ADD Property Photo
 
+<<<<<<< HEAD
+=======
+router.post();
+
+>>>>>>> moving  uploads to properties
 //Update Property
 
 router.put('/:id', validatePropertyId, validateOwner, async (req, res) => {
