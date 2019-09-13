@@ -84,9 +84,12 @@ const upload = multer({
   //   checkFileType(file, cb);
   // }
 });
-server.post('/upload', upload.single('profile'), (req, res, err) => {
+server.post('/upload/:id', upload.single('profile'), (req, res, err) => {
   try {
-    res.send(req.file);
+    const data = req.file;
+    const property_id = req.params.id;
+    const package = { property_id, data };
+    res.send(package);
   } catch (err) {
     res.send(400);
   }
