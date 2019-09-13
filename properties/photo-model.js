@@ -27,3 +27,11 @@ function remove(id) {
     .where({ id })
     .del();
 }
+
+function insert(photo) {
+  return db('photos')
+    .insert(photo)
+    .then(ids => {
+      return findById(ids[0]);
+    });
+}

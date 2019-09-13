@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Properties = require('./prop-model.js');
 const User = require('../users/users-model.js');
+const Photos = require('../properties/photo-model.js');
 
 const aws = require('aws-sdk');
 
@@ -36,12 +37,13 @@ const upload = multer({
   //   checkFileType(file, cb);
   // }
 });
-router.post('/upload/:id', upload.single('profile'), (req, res, err) => {
+router.post('/upload/:id', upload.single('profile'), async (req, res, err) => {
   try {
     const imageUrl = req.file.location;
     const property_id = req.params.id;
     const package = { property_id, imageUrl };
-    res.send(package);
+    const photo = await Photos.insert(package);
+    res.send(photo);
   } catch (err) {
     res.send(400);
   }
