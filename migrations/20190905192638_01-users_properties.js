@@ -22,24 +22,9 @@ exports.up = function(knex) {
         .inTable('users')
         .onUpdate('CASCADE')
         .onDelete('CASCADE');
-    })
-    .createTable('photos', tbl => {
-      tbl.increments();
-      tbl
-        .integer('property_id')
-        .unsigned()
-        .notNullable()
-        .references('id')
-        .inTable('properties')
-        .onUpdate('CASCADE')
-        .onDelete('CASCADE');
-      tbl.string('imageUrl').notNullable();
     });
 };
 
 exports.down = function(knex) {
-  return knex.schema
-    .dropTableIfExists('photos')
-    .dropTableIfExists('properties')
-    .dropTableIfExists('users');
+  return knex.schema.dropTableIfExists('properties').dropTableIfExists('users');
 };
