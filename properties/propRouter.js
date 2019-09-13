@@ -15,9 +15,34 @@ router.get('/', async (req, res) => {
 
 // GET by ID
 
-router.get('/:id', validatePropertyId, async (req, res) => {
+router.get('/:id',  validatePropertyId, async (req, res) => {
   res.status(200).json(req.property);
 });
+
+
+
+//Search by Location
+router.get('/:location', async (req, res) => {
+ try  {const place = await Properties.findBy (req.params);
+   console.log(place)
+   if(place){
+  res.status(200).json(place)}
+  else{
+    res.status(400).json({message: `Sorry, no B&Bs in this area`})
+  }
+
+  }
+  catch{
+
+  res.status(500).json({message: 'error searching.'})
+}
+
+
+
+
+});
+     
+
 
 //ADD Property'
 
