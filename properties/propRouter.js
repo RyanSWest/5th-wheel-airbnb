@@ -94,8 +94,6 @@ router.post('/', validateOwner, async (req, res) => {
   }
 });
 
-//ADD Property Photo
-
 //Update Property
 
 router.put('/:id', validatePropertyId, validateOwner, async (req, res) => {
