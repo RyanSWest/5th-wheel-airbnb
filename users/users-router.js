@@ -28,8 +28,7 @@ router.get('/:id', async (req, res)=> {
 router.get('/:id/messages', messageWare,  async (req, res)=> {
   console.log({message: req.body.messages, from: req.session.user.username})
   res.status(200).json({message: req.body.messages, from: req.session.user.username})
-  res.json(req.session.user.username)
-
+ 
 })
  
 //Send message to user with this ID
