@@ -26,8 +26,12 @@ router.get('/:id', async (req, res)=> {
 /// Check messages  
 
 router.get('/:id/messages',   async (req, res)=> {
-  console.log({message: req.body.messages, from: req.session.user.username})
-  res.status(200).json({message: req.body.messages, from: req.session.user.username})
+  const user = await Users.findById(req.params.id);
+   console.log(user)
+  console.log({message:  user.messages, from: req.session.user.username})
+
+
+  res.status(200).json({message: user.messages, from: req.session.user.username})
  
 })
  
@@ -35,12 +39,18 @@ router.get('/:id/messages',   async (req, res)=> {
 router.put('/:id',async (req, res)=> {
   console.log(req.body.username)
   const {id} =req.params;
+  console.log("ID",id)
+
   try{
-    const user = await Users.update(id, req.body.messages);
+    const user = await Users.update(id, {messages:req.body.messages});
+ 
+    console.log('USERS=>',user)
+    console.log('777',req.session.user.username)
+    console.log(req.body.messages)
     res.status(201).json({message: `message sent to ${req.body.username}`});
-    res.json(req.session.user.username)
+    // res.json(req.session.user.username)
   }catch(err){
-    console.log(err)
+     console.log(err)
     res.status(500)
     .json({message: 'cannot update.'})
   }
