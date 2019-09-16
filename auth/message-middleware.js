@@ -4,9 +4,11 @@ const Users = require('../users/users-model.js');
 
 module.exports = (req, res, next) => {
     const {id} =req.params;
+    const{id2}=req.session.user.id
      console.log(req.session.user.id)
-     console.log("88",req.body )
-    if ( req.session.user.id === req.body.id) {
+     const user =   Users.findById(req.params.id);
+      console.log("88",{id}, '77' ,req.session.user.id )
+    if ( {id} === req.session.user.id) {
          
          
         next();
