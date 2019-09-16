@@ -8,7 +8,7 @@ exports.up = function(knex) {
         .unique();
       tbl.string('password', 128).notNullable();
       tbl.string('user_type', 128).notNullable();
-      tbl.string('messages', 240)
+      tbl.string('messages', 240);
     })
     .createTable('properties', tbl => {
       tbl.increments();
@@ -23,9 +23,24 @@ exports.up = function(knex) {
         .inTable('users')
         .onUpdate('CASCADE')
         .onDelete('CASCADE');
+    })
+    .createTable('photos', tbl => {
+      tbl.increments();
+      tbl
+        .integer('property_id')
+        .unsigned()
+        .notNullable()
+        .references('id')
+        .inTable('properties')
+        .onUpdate('CASCADE')
+        .onDelete('CASCADE');
+      tbl.string('imageUrl').notNullable();
     });
 };
 
 exports.down = function(knex) {
-  return knex.schema.dropTableIfExists('properties').dropTableIfExists('users');
+  return knex.schema
+    .dropTableIfExists('photos')
+    .dropTableIfExists('properties')
+    .dropTableIfExists('users');
 };

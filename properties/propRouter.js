@@ -2,6 +2,56 @@ const express = require('express');
 const router = express.Router();
 const Properties = require('./prop-model.js');
 const User = require('../users/users-model.js');
+
+const Photos = require('../properties/photo-model.js');
+
+const aws = require('aws-sdk');
+const multer = require('multer');
+const multerS3 = require('multer-s3');
+
+// AWS CONFIG
+
+aws.config.update({
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  region: 'us-west-1'
+});
+
+const s3 = new aws.S3();
+const awsStorage = multerS3({
+  s3: s3,
+  bucket: process.env.AWS_BUCKET_NAME,
+  key: function(req, file, cb) {
+    console.log(file);
+    cb(null, file.originalname);
+  }
+});
+
+const upload = multer({
+  /**if you are using local storage than use
+   * storage: fileStorage,
+   * if you are using aws storage than use
+   * storage: awsStorage,
+   */
+  storage: awsStorage,
+  limits: { fileSize: 5000000 }
+  // fileFilter: function(req, file, cb) {
+  //   checkFileType(file, cb);
+  // }
+});
+
+router.post('/upload/:id', upload.single('photo'), (req, res, err) => {
+  try {
+    const imageUrl = req.file.location;
+    const property_id = req.params.id;
+    const data = req.file;
+    const package = { property_id, imageUrl, data };
+    res.send(package);
+  } catch (err) {
+    res.send(400);
+  }
+});
+
 //accessed via /api/properties
 // GET ALL
 router.get('/', async (req, res) => {
@@ -15,34 +65,36 @@ router.get('/', async (req, res) => {
 
 // GET by ID
 
-router.get('/:id',  validatePropertyId, async (req, res) => {
+router.get('/:id', validatePropertyId, async (req, res) => {
   res.status(200).json(req.property);
 });
 
+//ADD Property'
 
+router.post('/', validateOwner, async (req, res) => {
+  try {
+    const property = await Properties.insert(req.body);
+    res.status(201).json(property);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: 'There was an error adding property' });
+  }
+});
 
 //Search by Location
 router.get('/:location', async (req, res) => {
- try  {const place = await Properties.findBy (req.params);
-   console.log(place)
-   if(place){
-  res.status(200).json(place)}
-  else{
-    res.status(400).json({message: `Sorry, no B&Bs in this area`})
+  try {
+    const place = await Properties.findBy(req.params);
+    console.log(place);
+    if (place) {
+      res.status(200).json(place);
+    } else {
+      res.status(400).json({ message: `Sorry, no B&Bs in this area` });
+    }
+  } catch {
+    res.status(500).json({ message: 'error searching.' });
   }
-
-  }
-  catch{
-
-  res.status(500).json({message: 'error searching.'})
-}
-
-
-
-
 });
-     
-
 
 //ADD Property'
 

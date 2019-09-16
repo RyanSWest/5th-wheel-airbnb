@@ -5,10 +5,10 @@ const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
 
-const aws = require('aws-sdk');
+// const aws = require('aws-sdk');
 
-const multer = require('multer');
-const multerS3 = require('multer-s3');
+// const multer = require('multer');
+// const multerS3 = require('multer-s3');
 
 const restricted = require('../auth/restricted-middleware.js');
 const authRouter = require('../auth/auth-router.js');
@@ -99,5 +99,47 @@ server.post('/upload', upload.single('profile'), (req, res, err) => {
     res.send(400);
   }
 });
+
+/** AWS catalog */
+
+// aws.config.update({
+//   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+//   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+//   region: 'us-west-1'
+// });
+
+// const s3 = new aws.S3();
+// const awsStorage = multerS3({
+//   s3: s3,
+//   bucket: process.env.AWS_BUCKET_NAME,
+//   key: function(req, file, cb) {
+//     console.log(file);
+//     cb(null, file.originalname);
+//   }
+// });
+
+// const upload = multer({
+//   /**if you are using local storage than use
+//    * storage: fileStorage,
+//    * if you are using aws storage than use
+//    * storage: awsStorage,
+//    */
+//   storage: awsStorage,
+//   limits: { fileSize: 5000000 }
+//   // fileFilter: function(req, file, cb) {
+//   //   checkFileType(file, cb);
+//   // }
+// });
+// server.post('/upload/:id', upload.single('profile'), (req, res, err) => {
+//   try {
+//     const imageUrl = req.file.location;
+//     const property_id = req.params.id;
+//     const data = req.file;
+//     const package = { property_id, imageUrl, data };
+//     res.send(package);
+//   } catch (err) {
+//     res.send(400);
+//   }
+// });
 
 module.exports = server;
