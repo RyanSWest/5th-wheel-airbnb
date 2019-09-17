@@ -8,11 +8,7 @@ exports.up = function(knex) {
         .unique();
       tbl.string('password', 128).notNullable();
       tbl.string('user_type', 128).notNullable();
-<<<<<<< HEAD
-      tbl.string('messages', 240)
-=======
       tbl.string('messages', 240);
->>>>>>> 5dbc022396d6174b9b0bf39a62f671f3cb376276
     })
     .createTable('properties', tbl => {
       tbl.increments();

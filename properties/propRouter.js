@@ -95,36 +95,6 @@ router.post('/', validateOwner, async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
-=======
-//Search by Location
-router.get('/:location', async (req, res) => {
-  try {
-    const place = await Properties.findBy(req.params);
-    console.log(place);
-    if (place) {
-      res.status(200).json(place);
-    } else {
-      res.status(400).json({ message: `Sorry, no B&Bs in this area` });
-    }
-  } catch {
-    res.status(500).json({ message: 'error searching.' });
-  }
-});
-
-//ADD Property'
-
-router.post('/', validateOwner, async (req, res) => {
-  try {
-    const property = await Properties.insert(req.body);
-    res.status(201).json(property);
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: 'There was an error adding property' });
-  }
-});
-
->>>>>>> 5dbc022396d6174b9b0bf39a62f671f3cb376276
 //Update Property
 
 router.put('/:id', validatePropertyId, validateOwner, async (req, res) => {
