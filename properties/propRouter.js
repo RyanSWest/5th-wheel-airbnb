@@ -39,13 +39,14 @@ const upload = multer({
   //   checkFileType(file, cb);
   // }
 });
-router.post('/upload/:id', upload.single('profile'), async (req, res, err) => {
+
+router.post('/upload/:id', upload.single('photo'), (req, res, err) => {
   try {
     const imageUrl = req.file.location;
     const property_id = req.params.id;
-    const package = { property_id, imageUrl };
-    const photo = await Photos.insert(package);
-    res.send(photo);
+    const data = req.file;
+    const package = { property_id, imageUrl, data };
+    res.send(package);
   } catch (err) {
     res.send(400);
   }
