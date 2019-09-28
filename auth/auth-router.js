@@ -83,7 +83,7 @@ router.delete('/:id', async (req, res) => {
 
 //For Testing
 
-router.get('/users', async (req, res) => {
+router.get('/users', restricted, async (req, res) => {
   try {
     const users = await Users.find();
     console.log(users);

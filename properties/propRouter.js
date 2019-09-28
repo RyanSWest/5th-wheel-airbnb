@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Properties = require('./prop-model.js');
 const User = require('../users/users-model.js');
+
 const Photos = require('../properties/photo-model.js');
 
 const aws = require('aws-sdk');
@@ -68,6 +69,21 @@ router.get('/:id', validatePropertyId, async (req, res) => {
   res.status(200).json(req.property);
 });
 
+//Search by Location
+router.get('/:location', async (req, res) => {
+  try {
+    const place = await Properties.findBy(req.params);
+    console.log(place);
+    if (place) {
+      res.status(200).json(place);
+    } else {
+      res.status(400).json({ message: `Sorry, no B&Bs in this area` });
+    }
+  } catch {
+    res.status(500).json({ message: 'error searching.' });
+  }
+});
+
 //ADD Property'
 
 router.post('/', validateOwner, async (req, res) => {
@@ -79,8 +95,6 @@ router.post('/', validateOwner, async (req, res) => {
     res.status(500).json({ message: 'There was an error adding property' });
   }
 });
-
-//ADD Property Photo
 
 //Update Property
 
