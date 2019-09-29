@@ -34,7 +34,7 @@ module.exports = {
     client: 'pg',
     useNullAsDefault: true,
 
-    connection: process.env.DATABASE_URL,
+    connection: process.env.HEROKU_POSTGRESQL_COBALT_URL,
     seeds: {
       directory: './seeds'
     },
